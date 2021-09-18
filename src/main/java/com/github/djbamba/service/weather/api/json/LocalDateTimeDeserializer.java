@@ -21,8 +21,8 @@ public class LocalDateTimeDeserializer extends JsonDeserializer<LocalDateTime> {
       throws IOException, JsonProcessingException {
     JsonNode node = p.getCodec().readTree(p);
     long epochSeconds = node.asLong();
-    LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(epochSeconds),
-        ZoneId.systemDefault());
+    LocalDateTime localDateTime =
+        LocalDateTime.ofInstant(Instant.ofEpochSecond(epochSeconds), ZoneId.of("UTC"));
     log.info("{}", localDateTime);
 
     return localDateTime;
