@@ -1,12 +1,11 @@
 package com.github.djbamba.service.weather.api.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.TextIndexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "cities")
@@ -15,9 +14,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 @ToString
 public class City {
-private Long id;
-private String name;
-private String state;
-private String country;
-private Coordinate coord;
+  @Id private Long id;
+  @TextIndexed(weight = 1.1F) private String name;
+  @TextIndexed private String state;
+  private String country;
+  private Coordinate coord;
 }

@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class Clouds {
-
+//percentage
   @JsonAlias("all")
-  private Double all;
+  private Double cloudiness;
 }
