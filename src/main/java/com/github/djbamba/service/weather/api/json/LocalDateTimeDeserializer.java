@@ -23,7 +23,7 @@ public class LocalDateTimeDeserializer extends JsonDeserializer<LocalDateTime> {
     long epochSeconds = node.asLong();
     LocalDateTime localDateTime =
         LocalDateTime.ofInstant(Instant.ofEpochSecond(epochSeconds), ZoneId.of("UTC"));
-    log.info("{}", localDateTime);
+    log.debug("{}", localDateTime);
 
     return localDateTime;
   }
