@@ -12,13 +12,16 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString(exclude = {"METERS_IN_MILES"})
 public class WeatherResponse {
   @Getter(AccessLevel.NONE)
   private final double METERS_IN_MILES = 1_609.344D;
+
   private Coordinate coord;
   private List<Weather> weather;
   private CurrentWeather main;

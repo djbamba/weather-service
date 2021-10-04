@@ -18,15 +18,15 @@ import org.springframework.data.mongodb.core.query.TextCriteria;
 import org.springframework.data.mongodb.core.query.TextQuery;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.data.util.Pair;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-@Repository
-public class MongoCityRepository implements CityRepository {
-  private final Logger log = LoggerFactory.getLogger(MongoCityRepository.class);
+@Service
+public class CityQueries {
+  private final Logger log = LoggerFactory.getLogger(CityQueries.class);
   @Autowired private final MongoOperations ops;
 
-  public MongoCityRepository(MongoOperations ops) {
+  public CityQueries(MongoOperations ops) {
     Assert.notNull(ops, "MongoOperations cannot be null");
 
     this.ops = ops;
@@ -45,12 +45,10 @@ public class MongoCityRepository implements CityRepository {
     log.debug("Bulk Update: {}", result);
   }
 
-  @Override
   public City save(City city) {
     return ops.save(city);
   }
 
-  @Override
   public List<City> findAllByName(String name) {
     TextCriteria textCriteria =
         TextCriteria.forDefaultLanguage().matching(name).caseSensitive(false);
@@ -60,14 +58,12 @@ public class MongoCityRepository implements CityRepository {
     return ops.find(query, City.class);
   }
 
-  @Override
   public List<City> findAllByState(String state) {
     Query query = Query.query(Criteria.where("state").is(state));
 
     return ops.find(query, City.class);
   }
 
-  @Override
   public Optional<City> findByCoord(Coordinate coord) {
     Query query = Query.query(Criteria.where("coord").is(coord));
 

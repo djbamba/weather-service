@@ -13,8 +13,9 @@ import reactor.core.publisher.Mono;
 
 @Component
 public class WeatherHandler {
+
   @Autowired private final WeatherService weatherService;
-  private Logger LOG = LoggerFactory.getLogger(WeatherHandler.class);
+  private Logger log = LoggerFactory.getLogger(WeatherHandler.class);
 
   public WeatherHandler(WeatherService weatherService) {
     this.weatherService = weatherService;
@@ -45,9 +46,10 @@ public class WeatherHandler {
 
   private Mono<ServerResponse> handleError(Throwable t) {
     if (t instanceof WebClientResponseException) {
-      WebClientResponseException resEx = ((WebClientResponseException)t);
+      WebClientResponseException resEx = ((WebClientResponseException) t);
       if (resEx.getRawStatusCode() == 404) {
-        return ServerResponse.status(HttpStatus.NOT_FOUND).bodyValue(resEx.getResponseBodyAsString());
+        return ServerResponse.status(HttpStatus.NOT_FOUND)
+            .bodyValue(resEx.getResponseBodyAsString());
       }
     }
     return ServerResponse.badRequest().bodyValue(t.getMessage());
