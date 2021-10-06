@@ -12,11 +12,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 @Getter
 @Setter
-@ToString(callSuper = true)
 public class Day extends PeriodBase {
   @JsonDeserialize(using = LocalDateTimeDeserializer.class)
   @JsonFormat(shape = Shape.STRING, pattern = "MM-dd-uuuu HH:mm:ss")

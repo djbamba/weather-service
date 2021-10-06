@@ -1,6 +1,5 @@
 package com.github.djbamba.service.weather.api.response.period;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -11,12 +10,10 @@ import com.github.djbamba.service.weather.api.json.LocalDateTimeDeserializer;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 @JsonInclude(Include.NON_NULL)
 @Getter
 @Setter
-@ToString
 public class PeriodBase {
   @JsonDeserialize(using = LocalDateTimeDeserializer.class)
   @JsonFormat(shape = Shape.STRING, pattern = "MM-dd-uuuu HH:mm:ss")
