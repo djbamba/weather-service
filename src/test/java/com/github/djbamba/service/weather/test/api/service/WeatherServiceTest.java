@@ -1,5 +1,6 @@
 package com.github.djbamba.service.weather.api.service;
 
+import com.github.djbamba.service.weather.api.response.WeatherResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,8 @@ public class WeatherServiceTest {
         .uri(uriBuilder -> uriBuilder.path("/current-weather").queryParam("zip", "66441").build())
         .exchange()
         .expectStatus()
-        .isOk();
+        .isOk()
+        .expectBody(WeatherResponse.class)
+        .returnResult();
   }
 }
