@@ -4,16 +4,16 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.github.djbamba.service</groupId>
-  <artifactId>weather-service</artifactId>
-  <version>1.0-SNAPSHOT</version>
-
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
     <version>2.4.5</version>
     <relativePath/>
   </parent>
+
+  <groupId>com.github.djbamba.service</groupId>
+  <artifactId>weather-service</artifactId>
+  <version>1.0-SNAPSHOT</version>
 
   <properties>
     <maven.compiler.source>8</maven.compiler.source>
@@ -69,10 +69,21 @@
       <version>2.11.4</version>
     </dependency>
     <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jsr310</artifactId>
+      <version>2.11.4</version>
+    </dependency>
+    <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-webflux</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.springdoc</groupId>
+      <artifactId>springdoc-openapi-webflux-ui</artifactId>
+      <version>1.5.2</version>
+    </dependency>
   </dependencies>
+
   <build>
     <resources>
       <resource>
@@ -90,11 +101,13 @@
         <filtering>true</filtering>
       </testResource>
     </testResources>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-maven-plugin</artifactId>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
 </project>
