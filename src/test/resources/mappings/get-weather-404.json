@@ -1,0 +1,20 @@
+{
+  "request": {
+    "urlPath": "/weather",
+    "method": "GET",
+    "queryParameters": {
+      "zip": {
+        "equalTo": "00000"
+      },
+      "appid": {
+        "equalTo": "T3STK3Y"
+      },
+      "units": {
+        "equalTo": "imperial"
+      }
+    }
+  },
+  "response": {
+    "status": 404
+  }
+}

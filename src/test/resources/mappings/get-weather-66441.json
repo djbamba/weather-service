@@ -1,0 +1,24 @@
+{
+  "request": {
+    "urlPath": "/weather",
+    "method": "GET",
+    "queryParameters": {
+      "zip": {
+        "equalTo": "66441"
+      },
+      "appid": {
+        "equalTo": "T3STK3Y"
+      },
+      "units": {
+        "equalTo": "imperial"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "json/66441-weather.json",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

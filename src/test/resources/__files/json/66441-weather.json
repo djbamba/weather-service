@@ -1,0 +1,44 @@
+{
+  "coord": {
+    "lon": -96.8396,
+    "lat": 39.0299
+  },
+  "weather": [
+    {
+      "id": 804,
+      "main": "Clouds",
+      "description": "overcast clouds",
+      "icon": "04d"
+    }
+  ],
+  "base": "stations",
+  "main": {
+    "temp": 73.45,
+    "feels_like": 73.36,
+    "temp_min": 72.61,
+    "temp_max": 76.48,
+    "pressure": 1023,
+    "humidity": 61
+  },
+  "visibility": 10000,
+  "wind": {
+    "speed": 3,
+    "deg": 67,
+    "gust": 8.01
+  },
+  "clouds": {
+    "all": 99
+  },
+  "dt": 1633554031,
+  "sys": {
+    "type": 2,
+    "id": 2006227,
+    "country": "US",
+    "sunrise": 1633523290,
+    "sunset": 1633564938
+  },
+  "timezone": -18000,
+  "id": 0,
+  "name": "Junction City",
+  "cod": 200
+}

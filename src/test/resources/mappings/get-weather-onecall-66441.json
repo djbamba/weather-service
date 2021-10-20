@@ -1,0 +1,27 @@
+{
+  "request": {
+    "urlPath": "/onecall",
+    "method": "GET",
+    "queryParameters": {
+      "lat": {
+        "equalTo": "39.0299"
+      },
+      "lon": {
+        "equalTo": "-96.8396"
+      },
+      "units": {
+        "equalTo": "imperial"
+      },
+      "appid": {
+        "equalTo": "T3STK3Y"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "json/66441-weather-onecall.json",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}
