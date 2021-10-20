@@ -46,6 +46,6 @@ public class WeatherResponse {
   private Integer cod;
 
   public Double getVisibility() {
-    return this.visibility / METERS_IN_MILES;
+    return (this.visibility == null) ? 0D : this.visibility / METERS_IN_MILES;
   }
 }
