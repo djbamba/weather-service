@@ -52,7 +52,10 @@ public class WeatherRouter {
   @Bean
   public RouterFunction<ServerResponse> routes(WeatherHandler weatherHandler) {
     return RouterFunctions.route(
-        GET("/current-weather").and(RequestPredicates.accept(MediaType.ALL)),
-        weatherHandler::getWeatherByZip);
+            GET("/current-weather").and(RequestPredicates.accept(MediaType.ALL)),
+            weatherHandler::getWeatherByZip)
+        .andRoute(
+            GET("/onecall").and(RequestPredicates.accept(MediaType.ALL)),
+            weatherHandler::getWeatherByZipOneCall);
   }
 }
