@@ -1,4 +1,4 @@
-package com.github.djbamba.service.weather.repo;
+package com.github.djbamba.service.weather.api.service;
 
 import com.github.djbamba.service.weather.api.model.City;
 import com.github.djbamba.service.weather.api.model.Coordinate;
@@ -68,5 +68,11 @@ public class CityQueries {
     Query query = Query.query(Criteria.where("coord").is(coord));
 
     return Optional.ofNullable(ops.findOne(query, City.class));
+  }
+
+  public List<City> findAllCities(){
+    Query query = new Query();
+
+    return ops.find(query, City.class);
   }
 }
