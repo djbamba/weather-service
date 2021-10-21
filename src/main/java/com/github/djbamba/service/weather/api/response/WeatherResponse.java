@@ -9,12 +9,14 @@ import com.github.djbamba.service.weather.api.model.Coordinate;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.extern.jackson.Jacksonized;
 
-@NoArgsConstructor
+@Jacksonized
+@Builder
 @Getter
 @Setter
 @ToString(exclude = {"METERS_IN_MILES"})
