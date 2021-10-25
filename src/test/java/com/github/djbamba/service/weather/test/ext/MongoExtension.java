@@ -1,7 +1,6 @@
 package com.github.djbamba.service.weather.test.ext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.djbamba.service.weather.api.model.City;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -12,8 +11,7 @@ import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.index.TextIndexDefinition;
-import org.springframework.data.mongodb.core.index.TextIndexDefinition.TextIndexDefinitionBuilder;
+import org.springframework.data.mongodb.core.index.IndexDefinition;
 
 @Slf4j
 public class MongoExtension implements BeforeEachCallback, AfterEachCallback {
@@ -33,11 +31,7 @@ public class MongoExtension implements BeforeEachCallback, AfterEachCallback {
                   .constructCollectionType(List.class, testFile.classType()));
 
           objects.forEach(template::save);
-          //todo - move index creation
-          TextIndexDefinition cityNameAndState =
-              new TextIndexDefinitionBuilder().onField("name", 1.1F).onField("state").build();
-
-          template.indexOps(testFile.classType()).ensureIndex(cityNameAndState);
+          getIndexDefinition(context).ifPresent(idx -> template.indexOps(testFile.classType()).ensureIndex(idx));
         } catch (Exception e) {
           log.error("Error mapping JSON in beforeEach", e);
         }
@@ -58,13 +52,24 @@ public class MongoExtension implements BeforeEachCallback, AfterEachCallback {
 
 
   private Optional<MongoTemplate> getMongoTemplate(ExtensionContext context) {
+    return getMongoProvider(context).map(MongoTemplateProvider::getMongoTemplate);
+  }
+
+  private Optional<IndexDefinition> getIndexDefinition(ExtensionContext context) {
+    return getMongoProvider(context).flatMap(MongoTemplateProvider::getIndexDefinition);
+  }
+
+  /**
+   * Convenience method converting the test instance into MongoTemplateProvider.
+   * @param context current test context
+   * @return MongoTemplateProvider
+   */
+  private Optional<MongoTemplateProvider> getMongoProvider(ExtensionContext context) {
     return context.getTestClass().map(testClass -> {
-          if (MongoTemplateProvider.class.isAssignableFrom(testClass)) {
-            return context.getTestInstance()
-                .map(testInstance -> ((MongoTemplateProvider) testInstance).getMongoTemplate());
-          }
-          return Optional.<MongoTemplate>empty();
-        })
-        .orElse(Optional.empty());
+      if (MongoTemplateProvider.class.isAssignableFrom(testClass)) {
+        return context.getTestInstance().map(testInstance -> ((MongoTemplateProvider)testInstance));
+      }
+      return Optional.<MongoTemplateProvider>empty();
+    }).orElse(Optional.empty());
   }
 }
