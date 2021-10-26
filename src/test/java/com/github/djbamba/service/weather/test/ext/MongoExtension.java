@@ -1,11 +1,11 @@
 package com.github.djbamba.service.weather.test.ext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.djbamba.service.weather.test.util.TestFileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
@@ -15,8 +15,7 @@ import org.springframework.data.mongodb.core.index.IndexDefinition;
 
 @Slf4j
 public class MongoExtension implements BeforeEachCallback, AfterEachCallback {
-  private final Function<String, Path> TEST_DATA = fileName -> Paths.get("src", "test",
-      "resources", "data", "json").resolve(fileName);
+  private final Path DATA_PATH = Paths.get( "data", "json");
   private final ObjectMapper mapper = new ObjectMapper();
 
   @Override
@@ -26,8 +25,9 @@ public class MongoExtension implements BeforeEachCallback, AfterEachCallback {
           testMethod.getAnnotation(MongoJsonFile.class));
       mongoJsonFile.ifPresent(testFile -> getMongoTemplate(context).ifPresent(template -> {
         try {
-          List<?> objects = mapper.readValue(TEST_DATA.apply(testFile.value()).toFile(),
-              mapper.getTypeFactory()
+          String testFileContents = TestFileReader.readResourceFileAsString(DATA_PATH.resolve(testFile.value()));
+
+          List<?> objects = mapper.readValue(testFileContents, mapper.getTypeFactory()
                   .constructCollectionType(List.class, testFile.classType()));
 
           objects.forEach(template::save);
