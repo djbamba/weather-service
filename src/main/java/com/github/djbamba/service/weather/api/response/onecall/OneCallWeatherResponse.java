@@ -7,15 +7,17 @@ import com.github.djbamba.service.weather.api.response.period.Hour;
 import com.github.djbamba.service.weather.api.response.period.Minute;
 import java.util.List;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.extern.jackson.Jacksonized;
 
-@NoArgsConstructor
 @Getter
 @Setter
 @ToString(exclude = {"METERS_IN_MILES"})
+@Builder
+@Jacksonized
 public class OneCallWeatherResponse {
   @Getter(AccessLevel.NONE)
   private final double METERS_IN_MILES = 1_609.344D;

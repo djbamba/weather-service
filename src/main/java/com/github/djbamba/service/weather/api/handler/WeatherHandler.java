@@ -1,11 +1,14 @@
 package com.github.djbamba.service.weather.api.handler;
 
 import com.github.djbamba.service.weather.api.service.WeatherService;
+import java.util.Objects;
 import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
@@ -38,11 +41,13 @@ public class WeatherHandler {
                     .getCurrentWeatherByZip(zip, unit)
                     .flatMap(
                         res -> {
-                          if (res.getStatusCode().is4xxClientError()) {
-                            return ServerResponse.status(res.getStatusCode()).build();
+                          if (!res.getStatusCode().isError()) {
+                            Objects.requireNonNull(res.getBody(), "Response body cannot be null");
+                            return ServerResponse.ok().bodyValue(res.getBody());
                           }
-                          return ServerResponse.ok().bodyValue(res);
-                        }))
+                          return ServerResponse.status(res.getStatusCode()).build();
+                        })
+                    .onErrorResume(this::handleError))
         .orElseGet(
             () -> ServerResponse.badRequest().bodyValue("zip is a required query parameter"));
   }
@@ -56,8 +61,27 @@ public class WeatherHandler {
             zip ->
                 this.weatherService
                     .getCurrentWeatherByZipOneCall(zip, unit)
-                    .flatMap(res -> ServerResponse.ok().bodyValue(res)))
-        .orElseGet(
-            () -> ServerResponse.badRequest().bodyValue("zip is a required query parameter"));
+                    .flatMap(
+                        res -> {
+                          if (!res.getStatusCode().isError()) {
+                            Objects.requireNonNull(res.getBody(), "Response body cannot be null");
+                            return ServerResponse.ok().bodyValue(res.getBody());
+                          }
+                          return ServerResponse.status(res.getStatusCode()).build();
+                        })
+                    .onErrorResume(this::handleError))
+        .orElse(ServerResponse.badRequest().bodyValue("zip is a required query parameter"));
+  }
+
+  private Mono<ServerResponse> handleError(Throwable t) {
+    if (t instanceof WebClientResponseException) {
+      WebClientResponseException resEx = ((WebClientResponseException) t);
+      if (HttpStatus.NOT_FOUND.equals(resEx.getStatusCode())) {
+        return ServerResponse.status(resEx.getStatusCode())
+            .bodyValue(resEx.getResponseBodyAsString());
+      }
+      return ServerResponse.status(resEx.getStatusCode()).build();
+    }
+    return ServerResponse.unprocessableEntity().bodyValue(t.getLocalizedMessage());
   }
 }

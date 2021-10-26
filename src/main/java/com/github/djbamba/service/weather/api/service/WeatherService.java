@@ -2,14 +2,13 @@ package com.github.djbamba.service.weather.api.service;
 
 import com.github.djbamba.service.weather.api.response.WeatherResponse;
 import com.github.djbamba.service.weather.api.response.onecall.OneCallWeatherResponse;
+import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -30,13 +29,12 @@ public class WeatherService {
         .uri(
             uriBuilder ->
                 uriBuilder
-                    .path("weather")
+                    .path("/weather")
                     .queryParam("zip", zip)
                     .queryParam("units", units)
                     .build())
         .retrieve()
-        .toEntity(WeatherResponse.class)
-        .onErrorResume(this::handleError);
+        .toEntity(WeatherResponse.class);
   }
 
   public Mono<ResponseEntity<OneCallWeatherResponse>> getCurrentWeatherByZipOneCall(
@@ -44,13 +42,15 @@ public class WeatherService {
     Mono<ResponseEntity<WeatherResponse>> singleApi = getCurrentWeatherByZip(zip, units);
 
     return singleApi.flatMap(
-        res ->
-            this.client
+        res -> {
+          if (!res.getStatusCode().isError()) {
+            Objects.requireNonNull(res.getBody(), "WeatherResponse body cannot be null");
+            return this.client
                 .get()
                 .uri(
                     uriBuilder ->
                         uriBuilder
-                            .path("onecall")
+                            .path("/onecall")
                             .queryParam("lat", "{lat}")
                             .queryParam("lon", "{lon}")
                             .queryParam("units", "{unit}")
@@ -59,16 +59,9 @@ public class WeatherService {
                                 res.getBody().getCoord().getLongitude(),
                                 units))
                 .retrieve()
-                .toEntity(OneCallWeatherResponse.class));
-  }
-
-  private Mono<ResponseEntity<WeatherResponse>> handleError(Throwable t) {
-    if (t instanceof WebClientResponseException) {
-      WebClientResponseException resEx = ((WebClientResponseException) t);
-      if (resEx.getRawStatusCode() == 404) {
-        return Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
-      }
-    }
-    return Mono.just(ResponseEntity.unprocessableEntity().build());
+                .toEntity(OneCallWeatherResponse.class);
+          }
+          return Mono.just(ResponseEntity.status(res.getStatusCode()).build());
+        });
   }
 }

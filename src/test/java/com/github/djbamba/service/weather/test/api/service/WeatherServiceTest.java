@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -46,7 +47,8 @@ public class WeatherServiceTest {
               Assertions.assertEquals(
                   "Junction City", res.getBody().getCityName(), "City name does not match");
             })
-        .verifyComplete();
+        .expectComplete()
+        .verify();
   }
 
   @Test
@@ -54,15 +56,18 @@ public class WeatherServiceTest {
   public void testGetCurrentWeatherByZipNotFound() throws Exception {
     Mono<ResponseEntity<WeatherResponse>> weatherResNotFound =
         service.getCurrentWeatherByZip("00000", "imperial");
+    String errBody = "{\"cod\":\"404\",\"message\":\"city not found\"}";
 
     StepVerifier.create(weatherResNotFound)
-        .consumeNextWith(
-            res -> {
-              Assertions.assertTrue(
-                  res.getStatusCode().is4xxClientError(),
-                  "Weather response found when it shouldn't be");
+        .expectErrorSatisfies(
+            t -> {
+              Assertions.assertTrue(t instanceof WebClientResponseException);
+              WebClientResponseException resEx = (WebClientResponseException) t;
+              Assertions.assertTrue(resEx.getStatusCode().is4xxClientError());
+              Assertions.assertNotNull(resEx.getResponseBodyAsString());
+              Assertions.assertEquals(errBody, resEx.getResponseBodyAsString());
             })
-        .verifyComplete();
+        .verify();
   }
 
   @Test
@@ -76,6 +81,26 @@ public class WeatherServiceTest {
             res -> {
               Assertions.assertTrue(res.getStatusCode().is2xxSuccessful(), "Status should be 2xx");
             })
-        .verifyComplete();
+        .expectComplete()
+        .verify();
+  }
+
+  @Test
+  @DisplayName("Test getCurrentWeatherByZipOneCall - Not Found")
+  public void testGetCurrentWeatherByZipOneCallNotFound() throws Exception {
+    Mono<ResponseEntity<OneCallWeatherResponse>> weatherResNotFound =
+        service.getCurrentWeatherByZipOneCall("00000", "imperial");
+    String errBody = "{\"cod\":\"404\",\"message\":\"city not found\"}";
+
+    StepVerifier.create(weatherResNotFound)
+        .expectErrorSatisfies(
+            t -> {
+              Assertions.assertTrue(t instanceof WebClientResponseException);
+              WebClientResponseException resEx = (WebClientResponseException) t;
+              Assertions.assertTrue(resEx.getStatusCode().is4xxClientError());
+              Assertions.assertNotNull(resEx.getResponseBodyAsString());
+              Assertions.assertEquals(errBody, resEx.getResponseBodyAsString());
+            })
+        .verify();
   }
 }
