@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springdoc.core.annotations.RouterOperation;
 import org.springdoc.core.annotations.RouterOperations;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -22,6 +23,8 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 
 @Component
 public class WeatherRouter {
+  @Autowired private WeatherHandler weatherHandler;
+
   @RouterOperations({
     @RouterOperation(
         operation =
@@ -50,12 +53,16 @@ public class WeatherRouter {
                 }))
   })
   @Bean
-  public RouterFunction<ServerResponse> routes(WeatherHandler weatherHandler) {
+  public RouterFunction<ServerResponse> currentWeatherRoutes() {
     return RouterFunctions.route(
-            GET("/current-weather").and(RequestPredicates.accept(MediaType.ALL)),
-            weatherHandler::getWeatherByZip)
-        .andRoute(
-            GET("/onecall").and(RequestPredicates.accept(MediaType.ALL)),
-            weatherHandler::getWeatherByZipOneCall);
+        GET("/current-weather").and(RequestPredicates.accept(MediaType.ALL)),
+        weatherHandler::getWeatherByZip);
+  }
+
+  @Bean
+  public RouterFunction<ServerResponse> oneCallWeatherRoutes() {
+    return RouterFunctions.route(
+        GET("/onecall").and(RequestPredicates.accept(MediaType.ALL)),
+        weatherHandler::getWeatherByZipOneCall);
   }
 }
