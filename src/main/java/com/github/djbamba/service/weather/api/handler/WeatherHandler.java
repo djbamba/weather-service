@@ -19,6 +19,7 @@ public class WeatherHandler {
       sr -> sr.queryParam("unit").orElse("imperial");
   @Autowired private final WeatherService weatherService;
   private Logger log = LoggerFactory.getLogger(WeatherHandler.class);
+  private final Function<String, Mono<ServerResponse>> badRequest = msg -> ServerResponse.badRequest().bodyValue(String.format("{\"reason\": "+"\"%s\"}", msg));
 
   public WeatherHandler(WeatherService weatherService) {
     this.weatherService = weatherService;
@@ -48,8 +49,7 @@ public class WeatherHandler {
                           return ServerResponse.status(res.getStatusCode()).build();
                         })
                     .onErrorResume(this::handleError))
-        .orElseGet(
-            () -> ServerResponse.badRequest().bodyValue("zip is a required query parameter"));
+        .orElse(badRequest.apply("zip is a required query parameter"));
   }
 
   public Mono<ServerResponse> getWeatherByZipOneCall(ServerRequest request) {
@@ -70,7 +70,7 @@ public class WeatherHandler {
                           return ServerResponse.status(res.getStatusCode()).build();
                         })
                     .onErrorResume(this::handleError))
-        .orElse(ServerResponse.badRequest().bodyValue("zip is a required query parameter"));
+        .orElse(badRequest.apply("zip is a required query parameter"));
   }
 
   private Mono<ServerResponse> handleError(Throwable t) {
